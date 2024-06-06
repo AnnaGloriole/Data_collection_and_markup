@@ -10,7 +10,7 @@ from itemloaders.processors import TakeFirst, MapCompose, Compose
 
 class UnsplashImgSpider(CrawlSpider):
     name = 'unsplash_img'
-    allowed_domains = ['www.unsplash.com']
+    allowed_domains = ['unsplash.com']
     # start_urls = ['https://unsplash.com/s/photos/cosmos']
 
     def __init__(self, **kwargs):
