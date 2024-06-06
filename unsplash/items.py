@@ -12,7 +12,7 @@ def process_name(value):
 
 
 def process_photo(value:str):
-    value = value.split()[1]
+    value = value.split()[0]
     return value
 
 class UnsplashItem(scrapy.Item):
@@ -20,4 +20,4 @@ class UnsplashItem(scrapy.Item):
     name = scrapy.Field(input_processor=Compose(process_name), output_processor=TakeFirst())
     discription = scrapy.Field(output_processor=TakeFirst())
     photos = scrapy.Field(input_processor=MapCompose(process_photo))
-    pass
+    

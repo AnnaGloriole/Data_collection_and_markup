@@ -8,7 +8,7 @@ from scrapy.spiders import CrawlSpider, Rule
 from itemloaders.processors import TakeFirst, MapCompose, Compose
 
 
-class UnsplashImgSpider(CrawlSpider):
+class UnsplashImgSpider(scrapy.Spider):
     name = 'unsplash_img'
     allowed_domains = ['unsplash.com']
     # start_urls = ['https://unsplash.com/s/photos/cosmos']
@@ -17,12 +17,15 @@ class UnsplashImgSpider(CrawlSpider):
         super().__init__(**kwargs)
         self.start_urls = [f"https://unsplash.com/s/photos/{kwargs.get('query')}"]
 
-    def parse_item(self, response):
-        list_url = response.xpath("//div/a[@class='Prxeh']//@href")
-        for item in list_url:
-            loader = ItemLoader(item=UnsplashItem(), response=response)
-            loader.add_xpath('name', '//h1/text()')
-            loader.add_xpath('discription', '//p[@class="wMjKq N46Vv pvKRl"]/text()').get()
-            loader.add_xpath('photos', "//@srcset")
+    def parse(self, response: HtmlResponse):
+        links = response.xpath("//div/a[@class='Prxeh']//@href")
+        for link in links:
+            yield response.follow(link, callback=self.parse_item)
 
-            yield loader.load_item()
+    def parse_item(self, response: HtmlResponse):
+        loader = ItemLoader(item=UnsplashItem(), response=response)
+        loader.add_xpath('name', '//h1/text()')
+        loader.add_xpath('discription', '//p[@class="wMjKq N46Vv pvKRl"]/text()')
+        loader.add_xpath('photos', "//@srcset")
+
+        yield loader.load_item()
